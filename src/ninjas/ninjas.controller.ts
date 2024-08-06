@@ -6,7 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Put,
+  Patch,
   Query,
 } from '@nestjs/common';
 
@@ -18,8 +18,8 @@ export class NinjasController {
   constructor(private readonly ninjaService: NinjasService) {}
 
   @Get()
-  searchNinjas(@Query('name') name: string): CreateNinjaDto[] {
-    return this.ninjaService.filterNinjas({ name });
+  searchNinjas(@Query('name') name: string) {
+    return this.ninjaService.searchNinjas({ name });
   }
 
   @Get(':id')
@@ -32,7 +32,7 @@ export class NinjasController {
     return this.ninjaService.createNinja(createNinjaDto);
   }
 
-  @Put(':id')
+  @Patch(':id')
   updateNinja(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateBody: UpdateNinjaDto,
