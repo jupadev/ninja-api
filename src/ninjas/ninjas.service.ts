@@ -1,76 +1,55 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateNinjaDto, UpdateNinjaDto } from './dto/createNinja.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Ninja } from './entities/ninja';
+import { Like, Repository } from 'typeorm';
 
 @Injectable()
 export class NinjasService {
-  private ninjas: CreateNinjaDto[] = [
-    { id: 100, name: 'Kakuro', level: 'beginner', weapon: 'stars', life: 30 },
-    {
-      id: 101,
-      name: 'Sukai',
-      level: 'senior',
-      weapon: 'nunchakus',
-      life: 50,
-    },
-  ];
+  constructor(
+    @InjectRepository(Ninja)
+    private readonly ninjaRepository: Repository<Ninja>,
+  ) {}
 
-  getOne(id: number) {
-    const ninja = this.ninjas.find((ninja) => ninja.id === id);
-    if (ninja) {
-      return ninja;
+  async getOne(id: number) {
+    const ninja = await this.ninjaRepository.findOneBy({ id });
+    if (!ninja) {
+      throw new NotFoundException('Ninja not found');
     }
-    throw new NotFoundException('Ninja not found');
+
+    return ninja;
   }
 
-  getAll() {
-    return this.ninjas;
+  async getAll() {
+    return await this.ninjaRepository.find();
   }
 
-  filterNinjas(filters: Partial<Pick<CreateNinjaDto, 'level' | 'name'>>) {
+  async searchNinjas(filters: Partial<Pick<CreateNinjaDto, 'name'>>) {
     if (filters.name) {
-      const fileteredNinjas = this.ninjas.filter((ninja: CreateNinjaDto) => {
-        return ninja.name.toLowerCase().includes(filters.name.toLowerCase());
+      const fileteredNinjas = await this.ninjaRepository.findBy({
+        name: Like(`%${filters.name}%`),
       });
-      return fileteredNinjas || [];
+      return fileteredNinjas;
     }
-    return this.ninjas;
+    return this.getAll();
   }
 
-  createNinja(body: CreateNinjaDto) {
-    const ninjaFound = this.ninjas.find((ninja) => ninja.id === body.id);
-    if (ninjaFound) {
-      throw new ConflictException('ninja already exits with this id');
-    }
-    this.ninjas.push(body);
-    return body;
+  async createNinja(body: CreateNinjaDto) {
+    const newNinja = this.ninjaRepository.create(body);
+    const savedNinja = await this.ninjaRepository.save(newNinja);
+    return savedNinja;
   }
 
-  updateNinja(id: number, body: UpdateNinjaDto) {
-    const foundNinja = this.getOne(id);
-    if (foundNinja) {
-      let newNinja;
-      this.ninjas = this.ninjas.map((ninja) => {
-        if (ninja.id !== id) {
-          return ninja;
-        }
-        newNinja = { ...ninja, ...body };
-        return newNinja;
-      });
-      return newNinja;
-    }
+  async updateNinja(id: number, body: UpdateNinjaDto) {
+    const updatedNinja = await this.ninjaRepository.save({ id, ...body });
+    return updatedNinja;
   }
 
-  deleteNinja(id: number) {
-    const foundNinja = this.getOne(id);
-    if (foundNinja) {
-      this.ninjas = this.ninjas.filter((ninja) => {
-        return ninja.id !== id;
-      });
+  async deleteNinja(id: number) {
+    const deletedNinja = await this.ninjaRepository.softDelete(id);
+    if (deletedNinja.affected === 1) {
+      return `This ninja was deleted #${id}`;
     }
-    return `This ninja was deleted #${id}`;
+    throw new NotFoundException(`Ninja not found #${id}`);
   }
 }

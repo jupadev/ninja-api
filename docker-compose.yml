@@ -1,0 +1,36 @@
+# Use postgres/example user/password credentials
+version: '3.9'
+
+services:
+
+  postgres-db:
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=Machiato91
+      - POSTGRES_USER=Rusher
+      - POSTGRES_DB=GamePod
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+secrets:
+  db_name:
+    environment: POSTGRES_DB_NAME
+  db_user:
+    environment: POSTGRES_DB_USER
+  db_password:
+    environment: POSTGRES_DB_PASSWORD
+
