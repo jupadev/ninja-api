@@ -4,6 +4,9 @@ import { AppService } from './app.service';
 import { NinjasModule } from './ninjas/ninjas.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { WeaponsModule } from './weapons/weapons.module';
 
 @Module({
   imports: [
@@ -22,8 +25,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       synchronize: true,
       retryAttempts: 5,
     }),
-    
     NinjasModule,
+    UsersModule,
+    AuthModule,
+    WeaponsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
