@@ -15,8 +15,10 @@ import { WeaponsModule } from './weapons/weapons.module';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.POSTGRES_DB_host,
-      port: 5432,
+      host: process.env.POSTGRES_DB_HOST,
+      port: process.env.POSTGRES_DB_HOST
+        ? parseInt(process.env.POSTGRES_DB_HOST, 10)
+        : 5432,
       username: process.env.POSTGRES_DB_USER,
       password: process.env.POSTGRES_DB_PASSWORD,
       database: process.env.POSTGRES_DB_NAME,
