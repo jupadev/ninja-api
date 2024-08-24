@@ -4,9 +4,10 @@ import { NinjasService } from './ninjas.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Ninja } from './entities/ninja';
+import { WeaponsModule } from 'src/weapons/weapons.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Ninja])],
+  imports: [TypeOrmModule.forFeature([Ninja]), WeaponsModule],
   controllers: [NinjasController],
   providers: [NinjasService],
 })

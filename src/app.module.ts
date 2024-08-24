@@ -4,6 +4,9 @@ import { AppService } from './app.service';
 import { NinjasModule } from './ninjas/ninjas.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { WeaponsModule } from './weapons/weapons.module';
 
 @Module({
   imports: [
@@ -12,8 +15,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.POSTGRES_DB_host,
-      port: 5432,
+      host: process.env.POSTGRES_DB_HOST,
+      port: process.env.POSTGRES_DB_HOST
+        ? parseInt(process.env.POSTGRES_DB_HOST, 10)
+        : 5432,
       username: process.env.POSTGRES_DB_USER,
       password: process.env.POSTGRES_DB_PASSWORD,
       database: process.env.POSTGRES_DB_NAME,
@@ -22,8 +27,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       synchronize: true,
       retryAttempts: 5,
     }),
-    
     NinjasModule,
+    UsersModule,
+    AuthModule,
+    WeaponsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,7 +1,9 @@
+import { Weapon } from 'src/weapons/entities/weapon.entity';
 import {
   Column,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -9,14 +11,21 @@ import {
 export class Ninja {
   @PrimaryGeneratedColumn()
   id: number;
+
   @Column({ length: 50 })
   name: string;
+
   @Column()
   life: number;
-  @Column({ length: 30 })
-  weapon: string;
+
   @Column()
   level: string;
-  @DeleteDateColumn()
+
+  @ManyToOne(() => Weapon, (weapon) => weapon.id, {
+    eager: true, // to include data in findOne
+  })
+  weapon: Weapon;
+
+  @DeleteDateColumn({ select: false })
   deletedAt: Date;
 }
