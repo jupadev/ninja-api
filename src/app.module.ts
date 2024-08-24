@@ -25,6 +25,15 @@ import { WeaponsModule } from './weapons/weapons.module';
       entities: [],
       autoLoadEntities: true,
       synchronize: true,
+      ssl: process.env.POSTGRES_SSL === 'true',
+      extra: {
+        ssl:
+          process.env.POSTGRES_SSL === 'true'
+            ? {
+                rejectUnauthorized: false,
+              }
+            : null,
+      },
       retryAttempts: 5,
     }),
     NinjasModule,
