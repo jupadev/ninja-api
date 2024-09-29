@@ -15,7 +15,17 @@ import { Auth } from 'src/auth/decorators/auth';
 import { Role } from 'src/auth/types';
 import { ActiveUser } from 'src/auth/decorators/activeUser';
 import { ActiveUserInterface } from 'src/common/types';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiUnauthorizedResponse({
+  description: 'Unauthorized Bearer Auth',
+})
+@ApiTags('ninjas')
 @Controller('ninjas')
 @Auth(Role.USER)
 export class NinjasController {

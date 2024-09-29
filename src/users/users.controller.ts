@@ -3,7 +3,17 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Auth } from 'src/auth/decorators/auth';
 import { Role } from 'src/auth/types';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiUnauthorizedResponse({
+  description: 'Unauthorized Bearer Auth',
+})
+@ApiTags('users')
 @Controller('users')
 @Auth(Role.ADMIN)
 export class UsersController {
